@@ -10,7 +10,7 @@
   <packaging>jar</packaging>
 
   <name>MaceWind</name>
-  <description>Mace & WindCharge plugin for Bukkit/Spigot (v2.0.1)</description>
+  <description>Mace and WindCharge plugin for Bukkit/Spigot (v2.0.1)</description>
   <url>https://example.org/macewind</url>
 
   <properties>

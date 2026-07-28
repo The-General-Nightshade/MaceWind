@@ -19,8 +19,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class MaceWindPlugin
-extends JavaPlugin {
+public class MaceWindPlugin extends JavaPlugin {
+    @Override
     public void onEnable() {
         this.saveDefaultConfig();
         this.getServer().getPluginManager().registerEvents((Listener)new MaceListener(this), (Plugin)this);
@@ -30,10 +30,12 @@ extends JavaPlugin {
         this.getLogger().info("MaceWind enabled.");
     }
 
+    @Override
     public void onDisable() {
         this.getLogger().info("MaceWind disabled.");
     }
 
+    @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!cmd.getName().equalsIgnoreCase("macewind")) {
             return false;
@@ -69,6 +71,7 @@ extends JavaPlugin {
         return true;
     }
 
+    @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
         ArrayList<String> completions;
         block11: {
@@ -153,6 +156,7 @@ extends JavaPlugin {
         if (target == null) {
             return true;
         }
+        // ItemUtils.makeMace() already applies the NBT tag
         target.getInventory().addItem(new ItemStack[]{ItemUtils.makeMace()});
         target.sendMessage(ChatColor.GREEN + "[MaceWind] You received a Mace!");
         if (!target.equals((Object)sender)) {
@@ -267,7 +271,18 @@ extends JavaPlugin {
             player.sendMessage(ChatColor.RED + "Max level: " + EnchantUtils.toRoman(EnchantUtils.getMaxLevel(enchantName)));
             return true;
         }
-        if (EnchantUtils.addEnchantment(held, enchantName, level)) {
+
+        /*
+         * EnchantUtils.addEnchantment historically may mutate the ItemStack or replace it.
+         * We call it defensively, then reapply the mace NBT tag and set the item back into the player's hand.
+         * If you later change EnchantUtils to return the modified ItemStack, prefer capturing and setting that directly.
+         */
+        boolean applied = EnchantUtils.addEnchantment(held, enchantName, level);
+        if (applied) {
+            // Reapply tag to whatever is currently in the player's hand (covers both mutation and replacement)
+            ItemStack current = player.getInventory().getItemInMainHand();
+            ItemStack ensured = ItemUtils.ensureMaceTag(current);
+            player.getInventory().setItemInMainHand(ensured);
             player.sendMessage(ChatColor.GREEN + "Applied " + ChatColor.AQUA + enchantName + " " + EnchantUtils.toRoman(level) + ChatColor.GREEN + "!");
         } else {
             player.sendMessage(ChatColor.RED + "Cannot apply \u2014 conflicts with existing enchantment!");
@@ -295,6 +310,10 @@ extends JavaPlugin {
         }
         if (args[1].equalsIgnoreCase("all")) {
             EnchantUtils.clearEnchantments(held);
+            // ensure tag persists and set back
+            ItemStack current = player.getInventory().getItemInMainHand();
+            ItemStack ensured = ItemUtils.ensureMaceTag(current);
+            player.getInventory().setItemInMainHand(ensured);
             player.sendMessage(ChatColor.GREEN + "Removed all enchantments.");
         } else {
             String name = EnchantUtils.normaliseName(args[1]);
@@ -302,7 +321,11 @@ extends JavaPlugin {
                 player.sendMessage(ChatColor.RED + "Unknown enchant.");
                 return true;
             }
-            if (EnchantUtils.removeEnchantment(held, name)) {
+            boolean removed = EnchantUtils.removeEnchantment(held, name);
+            if (removed) {
+                ItemStack current = player.getInventory().getItemInMainHand();
+                ItemStack ensured = ItemUtils.ensureMaceTag(current);
+                player.getInventory().setItemInMainHand(ensured);
                 player.sendMessage(ChatColor.GREEN + "Removed " + name + ".");
             } else {
                 player.sendMessage(ChatColor.RED + "Mace doesn't have " + name + ".");
@@ -369,4 +392,3 @@ extends JavaPlugin {
         sender.sendMessage(ChatColor.GRAY + "Enchants: Density (I-V), Breach (I-IV), Wind_Burst (I-III)");
     }
 }
-

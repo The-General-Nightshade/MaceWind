@@ -1,0 +1,132 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.shadowlord</groupId>
+  <artifactId>macewind</artifactId>
+  <version>2.0.1</version>
+  <packaging>jar</packaging>
+
+  <name>MaceWind</name>
+  <description>Mace & WindCharge plugin for Bukkit/Spigot (v2.0.1)</description>
+  <url>https://example.org/macewind</url>
+
+  <properties>
+    <!-- Java and Bukkit/Spigot API versions -->
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <spigot.api.version>1.12.2-R0.1-SNAPSHOT</spigot.api.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <repositories>
+    <!-- Spigot snapshot repository (pulls the snapshot artifact from a URL) -->
+    <repository>
+      <id>spigot-repo</id>
+      <name>SpigotMC Snapshots</name>
+      <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+
+    <!-- Maven Central fallback -->
+    <repository>
+      <id>central</id>
+      <name>Maven Central</name>
+      <url>https://repo1.maven.org/maven2/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <!-- Spigot API (provided by the server at runtime) -->
+    <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot-api</artifactId>
+      <version>${spigot.api.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- If you use CraftBukkit NMS classes in util helpers, you may need craftbukkit as a compile-time dependency.
+         Keep it commented out unless you want to compile against a specific craftbukkit artifact.
+    -->
+    <!--
+    <dependency>
+      <groupId>org.bukkit</groupId>
+      <artifactId>craftbukkit</artifactId>
+      <version>1.12.2-R0.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    -->
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Compiler plugin -->
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
+          <encoding>${project.build.sourceEncoding}</encoding>
+        </configuration>
+      </plugin>
+
+      <!-- Shade plugin (optional) - useful if you want to relocate/uber dependencies -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.4</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <!-- Uncomment and configure relocations if you embed libraries -->
+              <!--
+              <relocations>
+                <relocation>
+                  <pattern>com.some.lib</pattern>
+                  <shadedPattern>com.shadowlord.shaded.com.some.lib</shadedPattern>
+                </relocation>
+              </relocations>
+              -->
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Resource filtering: include plugin.yml from src/main/resources -->
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.2.0</version>
+        <configuration>
+          <encoding>${project.build.sourceEncoding}</encoding>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <developers>
+    <developer>
+      <id>shadowlord</id>
+      <name>Shadowlord</name>
+      <email>callumnightshade@gmail.com</email>
+    </developer>
+  </developers>
+</project>

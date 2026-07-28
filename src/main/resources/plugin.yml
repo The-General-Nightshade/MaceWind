@@ -1,0 +1,19 @@
+name: MaceWind
+version: 2.0.0
+main: com.shadowlord.macewind.MaceWindPlugin
+api-version: 1.12
+description: Adds the Mace, Wind Charges, Mace enchantments, and Elytra firework boost to Minecraft 1.12.2.
+author: ShadowLord
+
+commands:
+  macewind:
+    description: MaceWind admin commands
+    usage: /<command> [subcommand] [args]
+    aliases: [mw]
+    permission: macewind.admin
+    permission-message: You don't have permission to use MaceWind commands.
+
+permissions:
+  macewind.admin:
+    description: Access to all MaceWind admin commands
+    default: op

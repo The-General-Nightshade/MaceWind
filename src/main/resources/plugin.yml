@@ -1,5 +1,5 @@
 name: MaceWind
-version: 2.0.0
+version: 2.0.1
 main: com.shadowlord.macewind.MaceWindPlugin
 api-version: 1.12
 description: Adds the Mace, Wind Charges, Mace enchantments, and Elytra firework boost to Minecraft 1.12.2.
